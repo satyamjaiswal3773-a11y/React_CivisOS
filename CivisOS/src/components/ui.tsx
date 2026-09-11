@@ -93,3 +93,121 @@ export function formatDateOnly(value?: string | null) {
   if (!value) return '—'
   return value.includes('T') ? formatDate(value) : value
 }
+
+export function formatTime(value?: string | null) {
+  if (!value) return '—'
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) {
+    // Handle TimeSpan-style "HH:mm:ss"
+    const m = value.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/)
+    if (m) {
+      const h = Number(m[1])
+      const min = m[2]
+      const ampm = h >= 12 ? 'PM' : 'AM'
+      const h12 = h % 12 || 12
+      return `${h12}:${min} ${ampm}`
+    }
+    return value
+  }
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+}
+
+export function formatMinutes(minutes?: number | null) {
+  if (minutes == null || Number.isNaN(minutes)) return '—'
+  const abs = Math.abs(minutes)
+  const h = Math.floor(abs / 60)
+  const m = abs % 60
+  const sign = minutes < 0 ? '-' : ''
+  if (h === 0) return `${sign}${m}m`
+  return `${sign}${h}h ${m.toString().padStart(2, '0')}m`
+}
+
+export function Pagination({
+  pageNumber,
+  totalPages,
+  totalCount,
+  onPageChange,
+  disabled,
+}: {
+  pageNumber: number
+  totalPages: number
+  totalCount?: number
+  onPageChange: (page: number) => void
+  disabled?: boolean
+}) {
+  if (totalPages <= 1 && !totalCount) return null
+  return (
+    <div className="pagination" role="navigation" aria-label="Pagination">
+      <span className="muted">
+        Page {pageNumber} of {Math.max(totalPages, 1)}
+        {totalCount != null ? ` · ${totalCount} records` : ''}
+      </span>
+      <div className="actions">
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={disabled || pageNumber <= 1}
+          onClick={() => onPageChange(pageNumber - 1)}
+        >
+          Previous
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={disabled || pageNumber >= totalPages}
+          onClick={() => onPageChange(pageNumber + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+export function ConfirmDialog({
+  open,
+  title,
+  message,
+  confirmLabel = 'Confirm',
+  danger,
+  busy,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean
+  title: string
+  message: string
+  confirmLabel?: string
+  danger?: boolean
+  busy?: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  if (!open) return null
+  return (
+    <div className="modal-backdrop" role="presentation" onClick={onCancel}>
+      <div
+        className="modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-dialog-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="confirm-dialog-title">{title}</h2>
+        <p className="muted">{message}</p>
+        <div className="actions" style={{ marginTop: '1rem' }}>
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
+            Cancel
+          </Button>
+          <Button type="button" variant={danger ? 'danger' : 'primary'} onClick={onConfirm} disabled={busy}>
+            {busy ? 'Working…' : confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function LoadingState({ message = 'Loading…' }: { message?: string }) {
+  return <div className="empty" role="status">{message}</div>
+}

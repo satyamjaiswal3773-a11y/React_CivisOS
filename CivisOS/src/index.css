@@ -1138,6 +1138,255 @@ th {
   }
 }
 
+/* —— Attendance module —— */
+.attendance-module {
+  max-width: 1600px;
+}
+
+.attendance-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  position: sticky;
+  top: 0.5rem;
+  z-index: 5;
+}
+
+.att-nav-link {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.att-nav-link:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.att-nav-link.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+
+.att-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.65rem;
+}
+
+.att-stat {
+  background: linear-gradient(180deg, #ffffff, #f4faf7);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem 0.75rem;
+  min-height: 78px;
+}
+
+.att-stat .stat-value {
+  font-size: 1.35rem;
+}
+
+.att-chart {
+  display: grid;
+  gap: 0.65rem;
+  min-height: 160px;
+}
+
+.att-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  height: 140px;
+}
+
+.att-chart-bar {
+  flex: 1;
+  min-width: 8px;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  border-radius: 6px 6px 2px 2px;
+  position: relative;
+}
+
+.att-chart-labels {
+  display: flex;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.att-chart-labels span {
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.att-dept-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 48px;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.45rem;
+  font-size: 0.85rem;
+}
+
+.att-dept-track {
+  height: 8px;
+  background: #eef3f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.att-dept-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 30, 24, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modal-panel {
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  width: min(440px, 100%);
+}
+
+.monthly-grid-wrap {
+  overflow: auto;
+  max-width: 100%;
+}
+
+.monthly-grid {
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  min-width: 900px;
+}
+
+.monthly-grid th,
+.monthly-grid td {
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+  border: 1px solid var(--line);
+  min-width: 28px;
+}
+
+.monthly-grid th.sticky-col,
+.monthly-grid td.sticky-col {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 1;
+  text-align: left;
+  min-width: 140px;
+  max-width: 180px;
+}
+
+.att-cell {
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.att-cell-present,
+.att-cell-wfh,
+.att-cell-onduty {
+  background: #ecfdf3;
+  color: var(--ok);
+}
+
+.att-cell-absent,
+.att-cell-missingpunch {
+  background: #fef3f2;
+  color: var(--danger);
+}
+
+.att-cell-leave {
+  background: #eff8ff;
+  color: var(--info);
+}
+
+.att-cell-halfday,
+.att-cell-late,
+.att-cell-earlyleaving,
+.att-cell-holiday,
+.att-cell-weeklyoff {
+  background: #fffaeb;
+  color: var(--warn);
+}
+
+.punch-timeline {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.punch-row {
+  display: grid;
+  grid-template-columns: 110px 64px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fafcfb;
+}
+
+.punch-row.in {
+  border-left: 3px solid var(--ok);
+}
+
+.punch-row.out {
+  border-left: 3px solid var(--info);
+}
+
+.sticky-actions {
+  position: sticky;
+  right: 0;
+  background: #fff;
+}
+
+.filter-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.table-wrap.att-table th:first-child,
+.table-wrap.att-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 1;
+}
+
 @media (max-width: 960px) {
   .app-shell,
   .login-page,

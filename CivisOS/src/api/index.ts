@@ -38,6 +38,41 @@ import type {
   WorkTaskPriority,
   WorkTaskStatus,
 } from '../types/api'
+import type {
+  ApprovalActionRequest,
+  ApproveOvertimeRequest,
+  AssignShiftRequest,
+  AttendanceDashboardDto,
+  AttendanceExceptionDto,
+  AttendanceLockDto,
+  AttendancePunchDto,
+  AttendanceReportType,
+  AttendanceSummaryDto,
+  AuditLogDto,
+  BulkAssignShiftRequest,
+  CreateOvertimeRequest,
+  CreatePunchRequest,
+  CreateRegularizationRequest,
+  CreateShiftRequest,
+  EmployeeAttendanceDayDto,
+  EmployeeShiftDto,
+  ImportBatchDto,
+  ImportConfirmResultDto,
+  ManualAttendanceCorrectionRequest,
+  MonthActionRequest,
+  MonthlyAttendanceEmployeeDto,
+  OvertimeRequestDto,
+  PayrollAttendanceDto,
+  ProcessAttendanceRequest,
+  RegularizationDto,
+  ResolveExceptionRequest,
+  SelfPunchRequest,
+  ShiftDto,
+  UnlockMonthRequest,
+  UpdateShiftRequest,
+} from '../types/attendance'
+
+type QueryParams = Record<string, string | number | boolean | undefined | null>
 
 export const authApi = {
   login: (body: LoginRequest) =>
@@ -61,15 +96,200 @@ export const employeesApi = {
     unwrap(http.post<ApiResponse<DesignationDto>>('/api/v1/designations', { name, description })),
 }
 
+function cleanParams(params?: QueryParams) {
+  if (!params) return undefined
+  const next: Record<string, string | number | boolean> = {}
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === '') continue
+    next[key] = value
+  }
+  return next
+}
+
 export const attendanceApi = {
-  my: (params?: Record<string, string | number | undefined>) =>
-    unwrap(http.get<ApiResponse<PagedResult<AttendanceDto>>>('/api/v1/attendance/my', { params })),
-  list: (params?: Record<string, string | number | undefined>) =>
-    unwrap(http.get<ApiResponse<PagedResult<AttendanceDto>>>('/api/v1/attendance', { params })),
+  my: (params?: QueryParams) =>
+    unwrap(http.get<ApiResponse<PagedResult<AttendanceDto>>>('/api/v1/attendance/my', { params: cleanParams(params) })),
+  list: (params?: QueryParams) =>
+    unwrap(http.get<ApiResponse<PagedResult<AttendanceDto>>>('/api/v1/attendance', { params: cleanParams(params) })),
   checkIn: (body: { latitude: number; longitude: number; geoFenceId: string }) =>
     unwrap(http.post<ApiResponse<AttendanceDto>>('/api/v1/attendance/check-in', body)),
   checkOut: (body: { latitude: number; longitude: number }) =>
     unwrap(http.post<ApiResponse<AttendanceDto>>('/api/v1/attendance/check-out', body)),
+
+  dashboard: (params?: { date?: string; departmentId?: string }) =>
+    unwrap(
+      http.get<ApiResponse<AttendanceDashboardDto>>('/api/v1/attendance/dashboard', {
+        params: cleanParams(params),
+      }),
+    ),
+
+  daily: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<EmployeeAttendanceDayDto>>>('/api/v1/attendance/days/daily', {
+        params: cleanParams(params),
+      }),
+    ),
+  monthly: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<MonthlyAttendanceEmployeeDto>>>('/api/v1/attendance/days/monthly', {
+        params: cleanParams(params),
+      }),
+    ),
+  dayDetail: (employeeId: string, date: string) =>
+    unwrap(
+      http.get<ApiResponse<EmployeeAttendanceDayDto>>(
+        `/api/v1/attendance/days/employee/${employeeId}/date/${date}`,
+      ),
+    ),
+  summary: (params?: { employeeId?: string; from?: string; to?: string }) =>
+    unwrap(
+      http.get<ApiResponse<AttendanceSummaryDto>>('/api/v1/attendance/days/summary', {
+        params: cleanParams(params),
+      }),
+    ),
+  process: (body: ProcessAttendanceRequest) =>
+    unwrap(http.post<ApiResponse<number>>('/api/v1/attendance/days/process', body)),
+  correct: (body: ManualAttendanceCorrectionRequest) =>
+    unwrap(http.post<ApiResponse<EmployeeAttendanceDayDto>>('/api/v1/attendance/days/correct', body)),
+
+  punches: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<AttendancePunchDto>>>('/api/v1/attendance/punches', {
+        params: cleanParams(params),
+      }),
+    ),
+  punchesDay: (params: { employeeId?: string; date?: string }) =>
+    unwrap(
+      http.get<ApiResponse<AttendancePunchDto[]>>('/api/v1/attendance/punches/day', {
+        params: cleanParams(params),
+      }),
+    ),
+  createPunch: (body: CreatePunchRequest) =>
+    unwrap(http.post<ApiResponse<AttendancePunchDto>>('/api/v1/attendance/punches', body)),
+  selfPunch: (body: SelfPunchRequest) =>
+    unwrap(http.post<ApiResponse<AttendancePunchDto>>('/api/v1/attendance/punches/self', body)),
+
+  regularizations: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<RegularizationDto>>>('/api/v1/attendance/regularizations', {
+        params: cleanParams(params),
+      }),
+    ),
+  regularization: (id: string) =>
+    unwrap(http.get<ApiResponse<RegularizationDto>>(`/api/v1/attendance/regularizations/${id}`)),
+  createRegularization: (body: CreateRegularizationRequest) =>
+    unwrap(http.post<ApiResponse<RegularizationDto>>('/api/v1/attendance/regularizations', body)),
+  approveRegularization: (id: string, body?: ApprovalActionRequest) =>
+    unwrap(http.post<ApiResponse<RegularizationDto>>(`/api/v1/attendance/regularizations/${id}/approve`, body ?? {})),
+  rejectRegularization: (id: string, body?: ApprovalActionRequest) =>
+    unwrap(http.post<ApiResponse<RegularizationDto>>(`/api/v1/attendance/regularizations/${id}/reject`, body ?? {})),
+  sendBackRegularization: (id: string, body?: ApprovalActionRequest) =>
+    unwrap(http.post<ApiResponse<RegularizationDto>>(`/api/v1/attendance/regularizations/${id}/send-back`, body ?? {})),
+
+  overtime: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<OvertimeRequestDto>>>('/api/v1/attendance/overtime', {
+        params: cleanParams(params),
+      }),
+    ),
+  createOvertime: (body: CreateOvertimeRequest) =>
+    unwrap(http.post<ApiResponse<OvertimeRequestDto>>('/api/v1/attendance/overtime', body)),
+  approveOvertime: (id: string, body: ApproveOvertimeRequest) =>
+    unwrap(http.post<ApiResponse<OvertimeRequestDto>>(`/api/v1/attendance/overtime/${id}/approve`, body)),
+  rejectOvertime: (id: string, body?: ApprovalActionRequest) =>
+    unwrap(http.post<ApiResponse<OvertimeRequestDto>>(`/api/v1/attendance/overtime/${id}/reject`, body ?? {})),
+
+  exceptions: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<AttendanceExceptionDto>>>('/api/v1/attendance/exceptions', {
+        params: cleanParams(params),
+      }),
+    ),
+  exception: (id: string) =>
+    unwrap(http.get<ApiResponse<AttendanceExceptionDto>>(`/api/v1/attendance/exceptions/${id}`)),
+  resolveException: (id: string, body: ResolveExceptionRequest) =>
+    unwrap(http.post<ApiResponse<AttendanceExceptionDto>>(`/api/v1/attendance/exceptions/${id}/resolve`, body)),
+
+  uploadImport: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return unwrap(
+      http.post<ApiResponse<ImportBatchDto>>('/api/v1/attendance/import/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }),
+    )
+  },
+  importBatch: (batchId: string) =>
+    unwrap(http.get<ApiResponse<ImportBatchDto>>(`/api/v1/attendance/import/${batchId}`)),
+  confirmImport: (batchId: string) =>
+    unwrap(http.post<ApiResponse<ImportConfirmResultDto>>(`/api/v1/attendance/import/${batchId}/confirm`)),
+
+  locks: (params?: { year?: number }) =>
+    unwrap(
+      http.get<ApiResponse<AttendanceLockDto[]>>('/api/v1/attendance/locks', {
+        params: cleanParams(params),
+      }),
+    ),
+  finalize: (body: MonthActionRequest) =>
+    unwrap(http.post<ApiResponse<AttendanceLockDto>>('/api/v1/attendance/locks/finalize', body)),
+  lock: (body: MonthActionRequest) =>
+    unwrap(http.post<ApiResponse<AttendanceLockDto>>('/api/v1/attendance/locks/lock', body)),
+  unlock: (body: UnlockMonthRequest) =>
+    unwrap(http.post<ApiResponse<AttendanceLockDto>>('/api/v1/attendance/locks/unlock', body)),
+
+  audit: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<AuditLogDto>>>('/api/v1/attendance/audit', {
+        params: cleanParams(params),
+      }),
+    ),
+
+  payroll: (params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PayrollAttendanceDto[]>>('/api/v1/attendance/payroll', {
+        params: cleanParams(params),
+      }),
+    ),
+
+  report: (reportType: AttendanceReportType | string, params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<EmployeeAttendanceDayDto>>>(`/api/v1/attendance/reports/${reportType}`, {
+        params: cleanParams(params),
+      }),
+    ),
+  exportReport: async (reportType: AttendanceReportType | string, params?: QueryParams) => {
+    const response = await http.get<Blob>(`/api/v1/attendance/reports/${reportType}/export`, {
+      params: cleanParams(params),
+      responseType: 'blob',
+    })
+    return response.data
+  },
+}
+
+export const shiftsApi = {
+  list: (params?: QueryParams) =>
+    unwrap(http.get<ApiResponse<PagedResult<ShiftDto>>>('/api/v1/shifts', { params: cleanParams(params) })),
+  get: (id: string) => unwrap(http.get<ApiResponse<ShiftDto>>(`/api/v1/shifts/${id}`)),
+  create: (body: CreateShiftRequest) => unwrap(http.post<ApiResponse<ShiftDto>>('/api/v1/shifts', body)),
+  update: (id: string, body: UpdateShiftRequest) =>
+    unwrap(http.put<ApiResponse<ShiftDto>>(`/api/v1/shifts/${id}`, body)),
+  remove: (id: string) => unwrap(http.delete<ApiResponse<object>>(`/api/v1/shifts/${id}`)),
+  assign: (body: AssignShiftRequest) =>
+    unwrap(http.post<ApiResponse<EmployeeShiftDto>>('/api/v1/shifts/assign', body)),
+  bulkAssign: (body: BulkAssignShiftRequest) =>
+    unwrap(http.post<ApiResponse<number>>('/api/v1/shifts/bulk-assign', body)),
+  current: (employeeId: string, asOf?: string) =>
+    unwrap(
+      http.get<ApiResponse<EmployeeShiftDto>>(`/api/v1/shifts/employee/${employeeId}`, {
+        params: cleanParams({ asOf }),
+      }),
+    ),
+  history: (employeeId: string, params?: QueryParams) =>
+    unwrap(
+      http.get<ApiResponse<PagedResult<EmployeeShiftDto>>>(`/api/v1/shifts/employee/${employeeId}/history`, {
+        params: cleanParams(params),
+      }),
+    ),
 }
 
 export const geoFencesApi = {

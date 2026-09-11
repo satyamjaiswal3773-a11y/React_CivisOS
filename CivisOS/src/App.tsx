@@ -1,9 +1,26 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { ProtectedRoute } from './auth/ProtectedRoute'
+import { AttendanceLayout } from './components/attendance'
 import { AppLayout } from './layouts/AppLayout'
 import { AiPage } from './pages/AiPage'
-import { AttendancePage } from './pages/AttendancePage'
+import {
+  AttendanceAuditPage,
+  AttendanceCheckInPage,
+  AttendanceDashboardPage,
+  AttendanceExceptionsPage,
+  AttendanceImportPage,
+  AttendanceLocksPage,
+  AttendanceReportsPage,
+  DailyAttendancePage,
+  EmployeeAttendancePage,
+  MonthlyAttendancePage,
+  OvertimePage,
+  RegularizationApprovalPage,
+  RegularizationPage,
+  ShiftAssignmentPage,
+  ShiftManagementPage,
+} from './pages/attendance'
 import { ChatPage } from './pages/ChatPage'
 import { CleaningPage } from './pages/CleaningPage'
 import { DashboardPage } from './pages/DashboardPage'
@@ -14,7 +31,7 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { TasksPage } from './pages/TasksPage'
 import { VehiclesPage } from './pages/VehiclesPage'
-import { ADMIN_ROLES } from './types/api'
+import { ADMIN_ROLES, ROLES } from './types/api'
 import './index.css'
 
 export default function App() {
@@ -32,7 +49,54 @@ export default function App() {
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="ai" element={<AiPage />} />
               </Route>
-              <Route path="attendance" element={<AttendancePage />} />
+
+              <Route path="attendance" element={<AttendanceLayout />}>
+                <Route index element={<AttendanceDashboardPage />} />
+                <Route path="check-in" element={<AttendanceCheckInPage />} />
+                <Route path="daily" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<DailyAttendancePage />} />
+                </Route>
+                <Route path="monthly" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<MonthlyAttendancePage />} />
+                </Route>
+                <Route path="employee" element={<EmployeeAttendancePage />} />
+                <Route path="shifts" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<ShiftManagementPage />} />
+                </Route>
+                <Route path="shift-assignments" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<ShiftAssignmentPage />} />
+                </Route>
+                <Route path="regularization" element={<RegularizationPage />} />
+                <Route path="regularization/approvals" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<RegularizationApprovalPage />} />
+                </Route>
+                <Route path="overtime" element={<OvertimePage />} />
+                <Route path="exceptions" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<AttendanceExceptionsPage />} />
+                </Route>
+                <Route
+                  path="import"
+                  element={<ProtectedRoute roles={[ROLES.SuperAdmin, ROLES.SocietyAdmin]} />}
+                >
+                  <Route index element={<AttendanceImportPage />} />
+                </Route>
+                <Route path="reports" element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
+                  <Route index element={<AttendanceReportsPage />} />
+                </Route>
+                <Route
+                  path="locks"
+                  element={<ProtectedRoute roles={[ROLES.SuperAdmin, ROLES.SocietyAdmin]} />}
+                >
+                  <Route index element={<AttendanceLocksPage />} />
+                </Route>
+                <Route
+                  path="audit"
+                  element={<ProtectedRoute roles={[ROLES.SuperAdmin, ROLES.SocietyAdmin]} />}
+                >
+                  <Route index element={<AttendanceAuditPage />} />
+                </Route>
+              </Route>
+
               <Route path="vehicles" element={<VehiclesPage />} />
               <Route path="cleaning" element={<CleaningPage />} />
               <Route path="tasks" element={<TasksPage />} />
