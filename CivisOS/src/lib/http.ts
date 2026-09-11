@@ -82,3 +82,18 @@ export async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Pro
   }
   return data.data
 }
+
+/** Like unwrap, but allows null data and returns the API message (for save endpoints). */
+export async function unwrapResult<T>(
+  promise: Promise<{ data: ApiResponse<T> }>,
+): Promise<{ data: T | null; message?: string | null }> {
+  const { data } = await promise
+  if (!data.success) {
+    throw new Error(data.message || data.errors?.join(' ') || 'Request failed.')
+  }
+  return { data: data.data ?? null, message: data.message }
+}
+
+export function isForbiddenError(error: unknown): boolean {
+  return axios.isAxiosError(error) && error.response?.status === 403
+}

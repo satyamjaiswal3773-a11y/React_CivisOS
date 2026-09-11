@@ -511,6 +511,140 @@ th {
   border: 1px solid #fecdca;
 }
 
+.success-banner {
+  padding: 1rem;
+  border-radius: 12px;
+  background: #ecfdf3;
+  color: var(--ok);
+  border: 1px solid #a7f3d0;
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  align-items: end;
+}
+
+.warn-text {
+  color: var(--warn);
+  margin: 0;
+  font-weight: 600;
+}
+
+.inline-field {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 220px;
+}
+
+.perm-hub-card {
+  color: inherit;
+  display: block;
+}
+
+.perm-hub-card .card {
+  height: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.perm-hub-card:hover .card {
+  border-color: #a7f3d0;
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.12);
+}
+
+.perm-hub-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.perm-modules {
+  display: grid;
+  gap: 1rem;
+}
+
+.perm-module {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.perm-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  background: #f7faf8;
+  border-bottom: 1px solid var(--line);
+}
+
+.perm-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+}
+
+.perm-list li {
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid #eef2f0;
+}
+
+.perm-list li:last-child {
+  border-bottom: none;
+}
+
+.perm-check {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.perm-check input {
+  margin-top: 0.2rem;
+}
+
+.perm-check span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.perm-code {
+  display: inline-block;
+  font-size: 0.75rem;
+  background: #eef2f0;
+  color: #334843;
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  width: fit-content;
+}
+
+.user-perm-row {
+  display: grid;
+  grid-template-columns: 1fr minmax(120px, 160px);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.user-perm-row > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+@media (max-width: 720px) {
+  .user-perm-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .list {
   list-style: none;
   margin: 0;

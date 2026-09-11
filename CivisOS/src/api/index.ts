@@ -1,4 +1,4 @@
-import { http, unwrap } from '../lib/http'
+import { http, unwrap, unwrapResult } from '../lib/http'
 import type {
   ApiResponse,
   AttendanceDto,
@@ -24,10 +24,17 @@ import type {
   GeoFenceStatus,
   LoginRequest,
   MessageDto,
+  MyAccessDto,
   NotificationDto,
   PagedResult,
+  PermissionDto,
+  RegisterRequest,
+  RolePermissionMatrixDto,
+  SetRolePermissionsRequest,
+  SetUserPermissionsRequest,
   TaskReportDto,
   UserDto,
+  UserPermissionMatrixDto,
   VehicleDto,
   VehicleLocationDto,
   VehicleReportDto,
@@ -77,7 +84,23 @@ type QueryParams = Record<string, string | number | boolean | undefined | null>
 export const authApi = {
   login: (body: LoginRequest) =>
     unwrap(http.post<ApiResponse<AuthResponse>>('/api/v1/auth/login', body)),
+  /** Creates a login account. Returns tokens for the new user — do not replace the admin session. */
+  register: (body: RegisterRequest) =>
+    unwrap(http.post<ApiResponse<AuthResponse>>('/api/v1/auth/register', body)),
   me: () => unwrap(http.get<ApiResponse<UserDto>>('/api/v1/auth/me')),
+  myAccess: () => unwrap(http.get<ApiResponse<MyAccessDto>>('/api/v1/auth/me/access')),
+}
+
+export const permissionsApi = {
+  list: () => unwrap(http.get<ApiResponse<PermissionDto[]>>('/api/v1/permissions')),
+  roleMatrix: (roleName: string) =>
+    unwrap(http.get<ApiResponse<RolePermissionMatrixDto>>(`/api/v1/permissions/roles/${encodeURIComponent(roleName)}`)),
+  setRolePermissions: (roleName: string, body: SetRolePermissionsRequest) =>
+    unwrapResult(http.put<ApiResponse<RolePermissionMatrixDto>>(`/api/v1/permissions/roles/${encodeURIComponent(roleName)}`, body)),
+  userMatrix: (userId: string) =>
+    unwrap(http.get<ApiResponse<UserPermissionMatrixDto>>(`/api/v1/permissions/users/${encodeURIComponent(userId)}`)),
+  setUserPermissions: (userId: string, body: SetUserPermissionsRequest) =>
+    unwrapResult(http.put<ApiResponse<UserPermissionMatrixDto>>(`/api/v1/permissions/users/${encodeURIComponent(userId)}`, body)),
 }
 
 export const employeesApi = {

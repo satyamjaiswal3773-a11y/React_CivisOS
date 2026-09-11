@@ -33,6 +33,15 @@ export type AuthResponse = {
 
 export type LoginRequest = { email: string; password: string }
 
+export type RegisterRequest = {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phoneNumber?: string | null
+  role: string
+}
+
 export type DepartmentDto = {
   id: string
   name: string
@@ -419,6 +428,69 @@ export type AiAssistantAnswerDto = {
   sourcesUsed: string[]
 }
 
+export type AppPageDto = {
+  id: string
+  pageKey: string
+  title: string
+  routePath: string
+  icon?: string | null
+  requiredPermissionCode?: string | null
+  parentPageId?: string | null
+  sortOrder: number
+  children: AppPageDto[]
+}
+
+export type MyAccessDto = {
+  userId: string
+  email: string
+  firstName: string
+  lastName: string
+  roles: string[]
+  permissions: string[]
+  pages: AppPageDto[]
+}
+
+export type PermissionDto = {
+  id: string
+  code: string
+  name: string
+  module: string
+  description?: string | null
+  isActive: boolean
+}
+
+export type RolePermissionMatrixDto = {
+  roleName: string
+  allPermissions: PermissionDto[]
+  grantedPermissionCodes: string[]
+}
+
+export type UserPermissionOverrideDto = {
+  permissionCode: string
+  isGranted: boolean
+}
+
+export type UserPermissionMatrixDto = {
+  userId: string
+  email: string
+  fullName: string
+  roles: string[]
+  effectivePermissionCodes: string[]
+  overrides: UserPermissionOverrideDto[]
+}
+
+export type SetRolePermissionsRequest = {
+  permissionCodes: string[]
+}
+
+export type SetUserPermissionsRequest = {
+  overrides: UserPermissionOverrideDto[]
+}
+
+export const PERMISSIONS = {
+  Manage: 'permissions.manage',
+} as const
+
 export const ROLES = {
   SuperAdmin: 'SuperAdmin',
   SocietyAdmin: 'SocietyAdmin',
@@ -430,3 +502,13 @@ export const ROLES = {
 } as const
 
 export const ADMIN_ROLES = [ROLES.SuperAdmin, ROLES.SocietyAdmin, ROLES.Supervisor]
+
+export const EDITABLE_ROLES = [
+  ROLES.SocietyAdmin,
+  ROLES.Supervisor,
+  ROLES.Employee,
+  ROLES.Driver,
+  ROLES.Security,
+  ROLES.Resident,
+] as const
+

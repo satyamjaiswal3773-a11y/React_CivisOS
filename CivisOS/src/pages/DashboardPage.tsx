@@ -422,9 +422,14 @@ export function DashboardPage() {
           </div>
           <div className="quick-actions">
             {isAdmin ? (
-              <Link to="/employees" className="quick-action">
-                <IconUserPlus size={16} /> Add Employee
-              </Link>
+              <>
+                <Link to="/users" className="quick-action">
+                  <IconUserPlus size={16} /> Add User
+                </Link>
+                <Link to="/employees" className="quick-action">
+                  <IconUsers size={16} /> Add Employee
+                </Link>
+              </>
             ) : null}
             <Link to="/vehicles" className="quick-action">
               <IconCar size={16} /> Register Vehicle

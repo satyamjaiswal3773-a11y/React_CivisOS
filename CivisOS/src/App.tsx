@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
-import { ProtectedRoute } from './auth/ProtectedRoute'
+import { ProtectedRoute, RequirePermission } from './auth/ProtectedRoute'
 import { AttendanceLayout } from './components/attendance'
 import { AppLayout } from './layouts/AppLayout'
 import { AiPage } from './pages/AiPage'
@@ -25,13 +25,16 @@ import { ChatPage } from './pages/ChatPage'
 import { CleaningPage } from './pages/CleaningPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { EmployeesPage } from './pages/EmployeesPage'
+import { ForbiddenPage } from './pages/ForbiddenPage'
 import { GeoFencesPage } from './pages/GeoFencesPage'
 import { LoginPage } from './pages/LoginPage'
 import { NotificationsPage } from './pages/NotificationsPage'
+import { PermissionsHubPage, RolePermissionsPage, UserPermissionsPage } from './pages/permissions'
 import { ReportsPage } from './pages/ReportsPage'
 import { TasksPage } from './pages/TasksPage'
+import { UsersPage } from './pages/UsersPage'
 import { VehiclesPage } from './pages/VehiclesPage'
-import { ADMIN_ROLES, ROLES } from './types/api'
+import { ADMIN_ROLES, PERMISSIONS, ROLES } from './types/api'
 import './index.css'
 
 export default function App() {
@@ -43,11 +46,22 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route index element={<DashboardPage />} />
+              <Route path="forbidden" element={<ForbiddenPage />} />
+
               <Route element={<ProtectedRoute roles={[...ADMIN_ROLES]} />}>
                 <Route path="employees" element={<EmployeesPage />} />
                 <Route path="geofences" element={<GeoFencesPage />} />
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="ai" element={<AiPage />} />
+              </Route>
+              <Route element={<ProtectedRoute roles={[ROLES.SuperAdmin, ROLES.SocietyAdmin]} />}>
+                <Route path="users" element={<UsersPage />} />
+              </Route>
+
+              <Route element={<RequirePermission permission={PERMISSIONS.Manage} />}>
+                <Route path="permissions" element={<PermissionsHubPage />} />
+                <Route path="permissions/roles" element={<RolePermissionsPage />} />
+                <Route path="permissions/users/:userId" element={<UserPermissionsPage />} />
               </Route>
 
               <Route path="attendance" element={<AttendanceLayout />}>
